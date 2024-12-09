@@ -44,6 +44,8 @@ static int LoadContext(GL_Context *data)
 #define __SDL_NOGETPROCADDR__
 #elif defined(SDL_VIDEO_DRIVER_ANDROID)
 #define __SDL_NOGETPROCADDR__
+#elif defined(__3DS__)
+#define __SDL_NOGETPROCADDR__
 #elif defined(SDL_VIDEO_DRIVER_PANDORA)
 #define __SDL_NOGETPROCADDR__
 #endif
@@ -105,99 +107,14 @@ Render(void)
     ctx.glClearColor(0.0, 0.0, 0.0, 1.0);
     ctx.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ctx.glBegin(GL_QUADS);
+    ctx.glBegin(GL_TRIANGLES);
 
-#ifdef SHADED_CUBE
-    ctx.glColor3fv(color[0]);
-    ctx.glVertex3fv(cube[0]);
-    ctx.glColor3fv(color[1]);
-    ctx.glVertex3fv(cube[1]);
-    ctx.glColor3fv(color[2]);
-    ctx.glVertex3fv(cube[2]);
-    ctx.glColor3fv(color[3]);
-    ctx.glVertex3fv(cube[3]);
-
-    ctx.glColor3fv(color[3]);
-    ctx.glVertex3fv(cube[3]);
-    ctx.glColor3fv(color[4]);
-    ctx.glVertex3fv(cube[4]);
-    ctx.glColor3fv(color[7]);
-    ctx.glVertex3fv(cube[7]);
-    ctx.glColor3fv(color[2]);
-    ctx.glVertex3fv(cube[2]);
-
-    ctx.glColor3fv(color[0]);
-    ctx.glVertex3fv(cube[0]);
-    ctx.glColor3fv(color[5]);
-    ctx.glVertex3fv(cube[5]);
-    ctx.glColor3fv(color[6]);
-    ctx.glVertex3fv(cube[6]);
-    ctx.glColor3fv(color[1]);
-    ctx.glVertex3fv(cube[1]);
-
-    ctx.glColor3fv(color[5]);
-    ctx.glVertex3fv(cube[5]);
-    ctx.glColor3fv(color[4]);
-    ctx.glVertex3fv(cube[4]);
-    ctx.glColor3fv(color[7]);
-    ctx.glVertex3fv(cube[7]);
-    ctx.glColor3fv(color[6]);
-    ctx.glVertex3fv(cube[6]);
-
-    ctx.glColor3fv(color[5]);
-    ctx.glVertex3fv(cube[5]);
-    ctx.glColor3fv(color[0]);
-    ctx.glVertex3fv(cube[0]);
-    ctx.glColor3fv(color[3]);
-    ctx.glVertex3fv(cube[3]);
-    ctx.glColor3fv(color[4]);
-    ctx.glVertex3fv(cube[4]);
-
-    ctx.glColor3fv(color[6]);
-    ctx.glVertex3fv(cube[6]);
-    ctx.glColor3fv(color[1]);
-    ctx.glVertex3fv(cube[1]);
-    ctx.glColor3fv(color[2]);
-    ctx.glVertex3fv(cube[2]);
-    ctx.glColor3fv(color[7]);
-    ctx.glVertex3fv(cube[7]);
-#else  /* flat cube */
-    ctx.glColor3f(1.0, 0.0, 0.0);
-    ctx.glVertex3fv(cube[0]);
-    ctx.glVertex3fv(cube[1]);
-    ctx.glVertex3fv(cube[2]);
-    ctx.glVertex3fv(cube[3]);
-
-    ctx.glColor3f(0.0, 1.0, 0.0);
-    ctx.glVertex3fv(cube[3]);
-    ctx.glVertex3fv(cube[4]);
-    ctx.glVertex3fv(cube[7]);
-    ctx.glVertex3fv(cube[2]);
-
-    ctx.glColor3f(0.0, 0.0, 1.0);
-    ctx.glVertex3fv(cube[0]);
-    ctx.glVertex3fv(cube[5]);
-    ctx.glVertex3fv(cube[6]);
-    ctx.glVertex3fv(cube[1]);
-
-    ctx.glColor3f(0.0, 1.0, 1.0);
-    ctx.glVertex3fv(cube[5]);
-    ctx.glVertex3fv(cube[4]);
-    ctx.glVertex3fv(cube[7]);
-    ctx.glVertex3fv(cube[6]);
-
-    ctx.glColor3f(1.0, 1.0, 0.0);
-    ctx.glVertex3fv(cube[5]);
-    ctx.glVertex3fv(cube[0]);
-    ctx.glVertex3fv(cube[3]);
-    ctx.glVertex3fv(cube[4]);
-
-    ctx.glColor3f(1.0, 0.0, 1.0);
-    ctx.glVertex3fv(cube[6]);
-    ctx.glVertex3fv(cube[1]);
-    ctx.glVertex3fv(cube[2]);
-    ctx.glVertex3fv(cube[7]);
-#endif /* SHADED_CUBE */
+    
+	glVertex3f(-1.0f, -1.0f, 0.0f );
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-1.0f,  1.0f, 0.0f );
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f( 1.0f,  1.0f, 0.0f );
 
     ctx.glEnd();
 

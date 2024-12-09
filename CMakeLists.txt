@@ -500,7 +500,7 @@ option(SDL_STATIC "Build a static version of the library" ${SDL_STATIC_ENABLED_B
 option(SDL_TEST   "Build the SDL2_test library" ${SDL_TEST_ENABLED_BY_DEFAULT})
 
 dep_option(SDL_STATIC_PIC      "Static version of the library should be built with Position Independent Code" "${CMAKE_POSITION_INDEPENDENT_CODE}" "SDL_STATIC" OFF)
-dep_option(SDL_TESTS           "Build the test directory" OFF SDL_TEST OFF)
+dep_option(SDL_TESTS           "Build the test directory" ON SDL_TEST ON)
 set_option(SDL_INSTALL_TESTS   "Install test-cases" OFF)
 
 set(HAVE_STATIC_PIC "${SDL_STATIC_PIC}")
@@ -2911,7 +2911,12 @@ elseif(N3DS)
   endif()
 
   if(SDL_VIDEO)
+    set(SDL_VIDEO_OPENGL 1)
+    set(SDL_VIDEO_RENDER_OGL 1)
+    set(HAVE_OPENGL TRUE)
     set(SDL_VIDEO_DRIVER_N3DS 1)
+    list(APPEND EXTRA_LIBS picaGL)
+
     file(GLOB N3DS_VIDEO_SOURCES ${SDL2_SOURCE_DIR}/src/video/n3ds/*.c)
     list(APPEND SOURCE_FILES ${N3DS_VIDEO_SOURCES})
     set(HAVE_SDL_VIDEO TRUE)

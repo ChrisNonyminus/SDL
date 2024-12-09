@@ -237,10 +237,10 @@ GL_CheckAllErrors(const char *prefix, SDL_Renderer *renderer, const char *file, 
 
 static int GL_LoadFunctions(GL_RenderData *data)
 {
+    int retval = 0;
 #ifdef __SDL_NOGETPROCADDR__
 #define SDL_PROC(ret, func, params) data->func = func;
 #else
-    int retval = 0;
 #define SDL_PROC(ret, func, params)                                                           \
     do {                                                                                      \
         data->func = SDL_GL_GetProcAddress(#func);                                            \
@@ -1075,11 +1075,13 @@ static int SetDrawState(GL_RenderData *data, const SDL_RenderCommand *cmd, const
             data->glDisable(GL_BLEND);
         } else {
             data->glEnable(GL_BLEND);
+            #if !defined(__3DS__)
             data->glBlendFuncSeparate(GetBlendFunc(SDL_GetBlendModeSrcColorFactor(blend)),
                                       GetBlendFunc(SDL_GetBlendModeDstColorFactor(blend)),
                                       GetBlendFunc(SDL_GetBlendModeSrcAlphaFactor(blend)),
                                       GetBlendFunc(SDL_GetBlendModeDstAlphaFactor(blend)));
             data->glBlendEquation(GetBlendEquation(SDL_GetBlendModeColorOperation(blend)));
+            #endif
         }
         data->drawstate.blend = blend;
     }

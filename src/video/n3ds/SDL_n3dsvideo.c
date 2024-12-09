@@ -22,12 +22,16 @@
 
 #ifdef SDL_VIDEO_DRIVER_N3DS
 
+#include <stdbool.h>
+#include <GL/picaGL.h>
+
 #include "../SDL_sysvideo.h"
 #include "SDL_n3dsevents_c.h"
 #include "SDL_n3dsframebuffer_c.h"
 #include "SDL_n3dsswkb.h"
 #include "SDL_n3dstouch.h"
 #include "SDL_n3dsvideo.h"
+
 
 #define N3DSVID_DRIVER_NAME "n3ds"
 
@@ -40,6 +44,14 @@ static int N3DS_SetDisplayMode(_THIS, SDL_VideoDisplay *display, SDL_DisplayMode
 static int N3DS_GetDisplayBounds(_THIS, SDL_VideoDisplay *display, SDL_Rect *rect);
 static int N3DS_CreateWindow(_THIS, SDL_Window *window);
 static void N3DS_DestroyWindow(_THIS, SDL_Window *window);
+static SDL_GLContext N3DS_GL_CreateContext(_THIS, SDL_Window *window);
+static int N3DS_GL_MakeCurrent(_THIS, SDL_Window *window, SDL_GLContext context);
+static void N3DS_GL_GetDrawableSize(_THIS, SDL_Window *window, int *w, int *h);
+static int N3DS_GL_SetSwapInterval(_THIS, int interval);
+static int N3DS_GL_GetSwapInterval(_THIS);
+static int N3DS_GL_SwapWindow(_THIS, SDL_Window *window);
+static void N3DS_GL_DeleteContext(_THIS, SDL_GLContext context);
+static void N3DS_GL_DefaultProfileConfig(_THIS, int *mask, int *major, int *minor);
 
 typedef struct
 {
@@ -114,6 +126,16 @@ static SDL_VideoDevice *N3DS_CreateDevice(void)
     device->UpdateWindowFramebuffer = SDL_N3DS_UpdateWindowFramebuffer;
     device->DestroyWindowFramebuffer = SDL_N3DS_DestroyWindowFramebuffer;
 
+    #define setfunc(funcname) device->funcname = N3DS_##funcname
+    setfunc(GL_CreateContext);
+    setfunc(GL_MakeCurrent);
+    setfunc(GL_SetSwapInterval);
+    setfunc(GL_GetSwapInterval);
+    setfunc(GL_SwapWindow);
+    setfunc(GL_DeleteContext);
+    setfunc(GL_DefaultProfileConfig);
+    setfunc(GL_GetDrawableSize);
+
     device->free = N3DS_DeleteDevice;
 
     device->quirk_flags = VIDEO_DEVICE_QUIRK_FULLSCREEN_ONLY;
@@ -127,7 +149,7 @@ static int N3DS_VideoInit(_THIS)
 {
     SDL_VideoData *driverdata = (SDL_VideoData *)_this->driverdata;
 
-    gfxInit(GSP_RGBA8_OES, GSP_RGBA8_OES, false);
+    gfxInit(GSP_RGBA8_OES, GSP_RGB565_OES, false);
     hidInit();
 
     driverdata->top_display = AddN3DSDisplay(GFX_TOP);
@@ -253,6 +275,74 @@ static void N3DS_DestroyWindow(_THIS, SDL_Window *window)
         return;
     }
     SDL_free(window->driverdata);
+}
+
+int gl_dummy_context = 1;
+
+static SDL_GLContext N3DS_GL_CreateContext(_THIS, SDL_Window *window)
+{
+    pglInit();
+    return &gl_dummy_context;
+}
+static int N3DS_GL_MakeCurrent(_THIS, SDL_Window *window, SDL_GLContext context)
+{
+    return 0; /* TODO */
+}
+static int N3DS_GL_SetSwapInterval(_THIS, int interval)
+{
+    return 0; /* TODO */
+}
+static int N3DS_GL_GetSwapInterval(_THIS)
+{
+    return 0; /* TODO */
+}
+static int N3DS_GL_SwapWindow(_THIS, SDL_Window *window)
+{
+    /* TODO: swap window per screen */
+    pglSwapBuffers();
+    return 0;
+}
+static void N3DS_GL_GetDrawableSize(_THIS, SDL_Window *window, int *w, int *h)
+{
+    int screen;
+    SDL_WindowData * data = (SDL_WindowData *)window->driverdata;
+    screen = data->screen;
+    if (screen == GFX_TOP)
+    {
+        if (w) {
+            *w = 400;
+        }
+        if (h) {
+            *h = 240;
+        }
+    }
+    else if (screen == GFX_BOTTOM)
+    {
+        if (w) {
+            *w = 320;
+        }
+        if (h) {
+            *h = 240;
+        }
+    }
+    else {
+        if (w) {
+            *w = 400;
+        }
+        if (h) {
+            *h = 240;
+        }
+    }
+}
+static void N3DS_GL_DeleteContext(_THIS, SDL_GLContext context)
+{
+    pglExit();
+}
+static void N3DS_GL_DefaultProfileConfig(_THIS, int *mask, int *major, int *minor)
+{
+    *mask = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
+    *major = 1;
+    *minor = 1;
 }
 
 #endif /* SDL_VIDEO_DRIVER_N3DS */

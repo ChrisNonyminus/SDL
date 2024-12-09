@@ -238,6 +238,7 @@
 #if defined(__3DS__)
 #undef __3DS__
 #define __3DS__ 1
+#define __SDL_NOGETPROCADDR__
 #endif
 
 #include "begin_code.h"

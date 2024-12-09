@@ -104,7 +104,7 @@ if(NOT MSVC OR NOT CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64")
     find_package(OpenGL)
 endif()
 
-if (OPENGL_FOUND)
+if (OPENGL_FOUND OR N3DS)
     add_definitions(-DHAVE_OPENGL)
 endif()
 

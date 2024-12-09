@@ -1712,9 +1712,11 @@ SDL_Window *SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint
             SDL_ContextNotSupported("OpenGL");
             return NULL;
         }
+#if !defined(__3DS__)
         if (SDL_GL_LoadLibrary(NULL) < 0) {
             return NULL;
         }
+#endif
     }
 
     if (flags & SDL_WINDOW_VULKAN) {
@@ -1873,9 +1875,11 @@ SDL_Window *SDL_CreateWindowFrom(const void *data)
             SDL_ContextNotSupported("OpenGL");
             return NULL;
         }
+#if !defined(__3DS__)
         if (SDL_GL_LoadLibrary(NULL) < 0) {
             return NULL;
         }
+#endif
         flags |= SDL_WINDOW_OPENGL;
     }
 
@@ -1991,7 +1995,9 @@ int SDL_RecreateWindow(SDL_Window *window, Uint32 flags)
     }
 
     if (need_gl_unload) {
+#if !defined(__3DS__)
         SDL_GL_UnloadLibrary();
+#endif
     }
 
     if (need_vulkan_unload) {
@@ -1999,9 +2005,11 @@ int SDL_RecreateWindow(SDL_Window *window, Uint32 flags)
     }
 
     if (need_gl_load) {
+#if !defined(__3DS__)
         if (SDL_GL_LoadLibrary(NULL) < 0) {
             return -1;
         }
+#endif
         loaded_opengl = SDL_TRUE;
     }
 
@@ -2019,7 +2027,9 @@ int SDL_RecreateWindow(SDL_Window *window, Uint32 flags)
     if (_this->CreateSDLWindow && !(flags & SDL_WINDOW_FOREIGN)) {
         if (_this->CreateSDLWindow(_this, window) < 0) {
             if (loaded_opengl) {
+#if !defined(__3DS__)
                 SDL_GL_UnloadLibrary();
+#endif
                 window->flags &= ~SDL_WINDOW_OPENGL;
             }
             if (loaded_vulkan) {
@@ -3341,7 +3351,9 @@ void SDL_DestroyWindow(SDL_Window *window)
         _this->DestroyWindow(_this, window);
     }
     if (window->flags & SDL_WINDOW_OPENGL) {
+#if !defined(__3DS__)
         SDL_GL_UnloadLibrary();
+#endif
     }
     if (window->flags & SDL_WINDOW_VULKAN) {
         SDL_Vulkan_UnloadLibrary();
@@ -3573,7 +3585,7 @@ SDL_bool SDL_GL_ExtensionSupported(const char *extension)
         GLint i;
 
         glGetStringiFunc = SDL_GL_GetProcAddress("glGetStringi");
-        glGetIntegervFunc = SDL_GL_GetProcAddress("glGetIntegerv");
+        glGetIntegervFunc = glGetIntegerv;
         if ((!glGetStringiFunc) || (!glGetIntegervFunc)) {
             return SDL_FALSE;
         }
@@ -4035,7 +4047,7 @@ int SDL_GL_GetAttribute(SDL_GLattr attr, int *value)
     }
 
 #ifdef SDL_VIDEO_OPENGL
-    glGetStringFunc = SDL_GL_GetProcAddress("glGetString");
+    glGetStringFunc = glGetString;
     if (!glGetStringFunc) {
         return -1;
     }
@@ -4043,7 +4055,7 @@ int SDL_GL_GetAttribute(SDL_GLattr attr, int *value)
     if (attachmentattrib && isAtLeastGL3((const char *)glGetStringFunc(GL_VERSION))) {
         /* glGetFramebufferAttachmentParameteriv needs to operate on the window framebuffer for this, so bind FBO 0 if necessary. */
         GLint current_fbo = 0;
-        void(APIENTRY * glGetIntegervFunc)(GLenum pname, GLint * params) = SDL_GL_GetProcAddress("glGetIntegerv");
+        void(APIENTRY * glGetIntegervFunc)(GLenum pname, GLint * params) = glGetIntegerv;
         void(APIENTRY * glBindFramebufferFunc)(GLenum target, GLuint fbo) = SDL_GL_GetProcAddress("glBindFramebuffer");
         if (glGetIntegervFunc && glBindFramebufferFunc) {
             glGetIntegervFunc(GL_DRAW_FRAMEBUFFER_BINDING, &current_fbo);
@@ -4065,7 +4077,7 @@ int SDL_GL_GetAttribute(SDL_GLattr attr, int *value)
 #endif
     {
         void(APIENTRY * glGetIntegervFunc)(GLenum pname, GLint * params);
-        glGetIntegervFunc = SDL_GL_GetProcAddress("glGetIntegerv");
+        glGetIntegervFunc = glGetIntegerv;
         if (glGetIntegervFunc) {
             glGetIntegervFunc(attrib, (GLint *)value);
         } else {
@@ -4073,7 +4085,7 @@ int SDL_GL_GetAttribute(SDL_GLattr attr, int *value)
         }
     }
 
-    glGetErrorFunc = SDL_GL_GetProcAddress("glGetError");
+    glGetErrorFunc = glGetError;
     if (!glGetErrorFunc) {
         return -1;
     }
